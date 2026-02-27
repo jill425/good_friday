@@ -11,11 +11,15 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
+// Deterministic pseudo-random — no Math.random
+function hash(n: number): number {
+  return ((Math.sin(n * 127.1 + 311.7) * 43758.5453) % 1 + 1) % 1
+}
+
 export function CrownScene({ chapter, scrollProgress }: CrownSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const stateRef = useRef({ chapter, scrollProgress })
 
-  // Keep stateRef in sync without triggering animation loop issues
   useEffect(() => {
     stateRef.current.chapter = chapter
     stateRef.current.scrollProgress = scrollProgress
@@ -25,12 +29,12 @@ export function CrownScene({ chapter, scrollProgress }: CrownSceneProps) {
     if (!containerRef.current) return
 
     let animationId: number
-    let renderer: import("three").WebGLRenderer
-    let scene: import("three").Scene
-    let camera: import("three").PerspectiveCamera
-    let meshes: import("three").Mesh[] = []
-    let mainLight: import("three").PointLight
-    let fillLight: import("three").AmbientLight
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let renderer: any, scene: any, camera: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let allMeshes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let mainLight: any, fillLight: any, spotLight: any
 
     const init = async () => {
       const THREE = await import("three")
@@ -40,140 +44,192 @@ export function CrownScene({ chapter, scrollProgress }: CrownSceneProps) {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
       renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.setClearColor(0x000000, 0)
+      renderer.toneMapping = THREE.ACESFilmicToneMapping
+      renderer.toneMappingExposure = 1.2
       containerRef.current!.appendChild(renderer.domElement)
 
       // ── Scene & Camera ─────────────────────────────────────────
       scene = new THREE.Scene()
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100)
-      camera.position.set(0, 0, 4.5)
+      camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 100)
+      camera.position.set(0, 0.4, 4.8)
+      camera.lookAt(0, 0, 0)
 
       // ── Lights ─────────────────────────────────────────────────
+      // Main point light — colour & intensity lerped by chapter
       mainLight = new THREE.PointLight(0xff3300, 0.4, 20)
-      mainLight.position.set(2, 3, 4)
+      mainLight.position.set(1.5, 3.5, 3)
       scene.add(mainLight)
 
-      fillLight = new THREE.AmbientLight(0x111111, 0.3)
+      // Soft fill
+      fillLight = new THREE.AmbientLight(0x110005, 0.4)
       scene.add(fillLight)
 
-      const rimLight = new THREE.DirectionalLight(0xffffff, 0.2)
-      rimLight.position.set(-3, -1, -2)
+      // Rim from behind
+      const rimLight = new THREE.DirectionalLight(0x221100, 0.25)
+      rimLight.position.set(-3, 1, -3)
       scene.add(rimLight)
 
-      // ── Crown Geometry ─────────────────────────────────────────
-      // Materials
-      const ringMat = new THREE.MeshStandardMaterial({
-        color: 0xc4923a,
-        metalness: 0.9,
-        roughness: 0.2,
-      })
-      const spikeMat = new THREE.MeshStandardMaterial({
-        color: 0xd4a845,
-        metalness: 0.85,
-        roughness: 0.25,
-      })
-      const gemMat = new THREE.MeshStandardMaterial({
-        color: 0xff2200,
-        metalness: 0.1,
-        roughness: 0.05,
-        emissive: 0x440000,
-        emissiveIntensity: 0.5,
+      // Spot from above for dramatic spike highlights
+      spotLight = new THREE.SpotLight(0xffd000, 0.0, 18, Math.PI / 5, 0.6, 1.5)
+      spotLight.position.set(0, 6, 1.5)
+      spotLight.target.position.set(0, 0, 0)
+      scene.add(spotLight)
+      scene.add(spotLight.target)
+
+      // ── Materials ─────────────────────────────────────────────
+      const thornMat = new THREE.MeshStandardMaterial({
+        color: 0x1e0e05,
+        roughness: 0.95,
+        metalness: 0.04,
       })
 
-      // 1 — torus (crown base ring)
-      const torusGeo = new THREE.TorusGeometry(1.2, 0.12, 8, 24)
-      const torusMesh = new THREE.Mesh(torusGeo, ringMat)
-      scene.add(torusMesh)
-      meshes.push(torusMesh)
+      const goldMat = new THREE.MeshPhysicalMaterial({
+        color: 0xc89b1a,
+        metalness: 0.93,
+        roughness: 0.36,
+        clearcoat: 0.9,
+        clearcoatRoughness: 0.18,
+      })
 
-      // 7 — spike cones along the ring
-      for (let i = 0; i < 7; i++) {
-        const angle = (i / 7) * Math.PI * 2
-        const coneGeo = new THREE.ConeGeometry(0.1, 0.7, 6)
-        const coneMesh = new THREE.Mesh(coneGeo, spikeMat)
+      // ── THORN TUBES ───────────────────────────────────────────
+      // 4 CatmullRom tubes that wind around the crown base,
+      // varying in height to create a layered interweaving look.
+      for (let i = 0; i < 4; i++) {
+        const points = []
+        const numCtrl = 16
+        // Stagger the start angle so tubes don't perfectly overlap
+        const angleOffset = (i / 4) * Math.PI * 2 + hash(i * 17) * 0.4
+        // Each tube has its own height "lane" to suggest weaving
+        const yBias = -0.3 + i * 0.12
 
-        // Rest position: on the ring, pointing up
-        const rx = Math.cos(angle) * 1.2
-        const rz = Math.sin(angle) * 1.2
-        coneMesh.position.set(rx, 0.35, rz)
-        coneMesh.rotation.z = -angle + Math.PI / 2
-        // We store rest rotation separately; handled via userData
-        coneMesh.userData.restRotation = { x: 0, y: 0, z: -angle + Math.PI / 2 }
+        for (let j = 0; j < numCtrl; j++) {
+          const t = j / numCtrl
+          const angle = t * Math.PI * 2 + angleOffset
+          const r = 1.18 + (hash(i * 100 + j) - 0.5) * 0.11
+          const y = yBias + (hash(i * 50 + j * 7 + 3) - 0.5) * 0.38
+          points.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r))
+        }
 
-        scene.add(coneMesh)
-        meshes.push(coneMesh)
+        const curve = new THREE.CatmullRomCurve3(points, true, "catmullrom", 0.5)
+        const tubeGeo = new THREE.TubeGeometry(curve, 100, 0.036, 7, true)
+        const tube = new THREE.Mesh(tubeGeo, thornMat)
+        scene.add(tube)
+        allMeshes.push(tube)
       }
 
-      // 3 — octahedron gems at spikes 1, 3, 5
-      const gemIndices = [1, 3, 5]
-      for (let gi = 0; gi < 3; gi++) {
-        const spikeIdx = gemIndices[gi]
-        const angle = (spikeIdx / 7) * Math.PI * 2
-        const gemGeo = new THREE.OctahedronGeometry(0.12, 0)
-        const gemMesh = new THREE.Mesh(gemGeo, gemMat)
+      // ── BASE BAND (torus ring, separates thorns from gold) ────
+      const baseGeo = new THREE.TorusGeometry(1.2, 0.075, 10, 36)
+      const baseMesh = new THREE.Mesh(baseGeo, thornMat)
+      baseMesh.rotation.x = Math.PI / 2
+      baseMesh.position.y = 0.02
+      scene.add(baseMesh)
+      allMeshes.push(baseMesh)
 
-        const rx = Math.cos(angle) * 1.2
-        const rz = Math.sin(angle) * 1.2
-        gemMesh.position.set(rx, 0.75, rz)
+      // ── GOLD FLAME SPIKES ─────────────────────────────────────
+      // Heights follow a rhythmic pattern: tall–short–taller–short–tallest–…
+      const spikeHeights = [0.82, 0.54, 0.96, 0.56, 1.22, 0.56, 0.96, 0.54, 0.82]
+      const numSpikes = spikeHeights.length
 
-        scene.add(gemMesh)
-        meshes.push(gemMesh)
+      for (let i = 0; i < numSpikes; i++) {
+        const h = spikeHeights[i]
+        const bw = 0.095   // base half-width
+        const mw = 0.12    // mid belly half-width
+
+        // Flame / leaf profile in the XY plane, tip at top
+        const shape = new THREE.Shape()
+        shape.moveTo(0, h)
+        shape.bezierCurveTo(-mw, h * 0.66, -bw, h * 0.30, -bw * 0.65, 0)
+        shape.lineTo(bw * 0.65, 0)
+        shape.bezierCurveTo(bw, h * 0.30, mw, h * 0.66, 0, h)
+
+        const depth = 0.058
+        const extrudeGeo = new THREE.ExtrudeGeometry(shape, {
+          depth,
+          bevelEnabled: true,
+          bevelThickness: 0.013,
+          bevelSize: 0.013,
+          bevelSegments: 3,
+        })
+        // Centre the extrusion depth so the spike sits symmetrically on the ring
+        extrudeGeo.translate(0, 0, -depth / 2)
+
+        const spike = new THREE.Mesh(extrudeGeo, goldMat)
+
+        const angle = (i / numSpikes) * Math.PI * 2
+        spike.position.set(Math.cos(angle) * 1.2, 0.02, Math.sin(angle) * 1.2)
+        // Rotate so the flat face is tangent to the ring (faces outward)
+        spike.rotation.y = Math.PI / 2 - angle
+
+        scene.add(spike)
+        allMeshes.push(spike)
       }
 
-      // ── Store rest positions ───────────────────────────────────
-      // Save rest positions once geometry is placed
-      meshes.forEach((mesh, i) => {
+      // ── Store rest / scatter data ──────────────────────────────
+      allMeshes.forEach((mesh, i) => {
         mesh.userData.restPos = mesh.position.clone()
-        mesh.userData.restRot = mesh.rotation.clone()
+        mesh.userData.restRot = {
+          x: mesh.rotation.x,
+          y: mesh.rotation.y,
+          z: mesh.rotation.z,
+        }
 
-        // Scatter positions using golden angle (deterministic)
-        const goldenAngle = i * 137.508 * (Math.PI / 180)
-        const radius = 2.5 + (i % 3) * 0.8
-        const sx = Math.cos(goldenAngle) * radius
-        const sy = (Math.sin(goldenAngle * 0.7) * 2) - 1
-        const sz = Math.sin(goldenAngle) * radius * 0.6
-        mesh.userData.scatterPos = { x: sx, y: sy, z: sz }
+        // Scatter using golden angle for even distribution
+        const ga = i * 137.508 * (Math.PI / 180)
+        const radius = 2.6 + (i % 3) * 0.75
+        mesh.userData.scatterPos = {
+          x: Math.cos(ga) * radius,
+          y: (Math.sin(ga * 0.7) * 2.2) - 0.5,
+          z: Math.sin(ga) * radius * 0.55,
+        }
         mesh.userData.scatterRotSpeed = {
-          x: ((i * 0.37) % 1) * 0.02 - 0.01,
-          y: ((i * 0.61) % 1) * 0.02 - 0.01,
-          z: ((i * 0.91) % 1) * 0.02 - 0.01,
+          x: (hash(i * 0.37) - 0.5) * 0.018,
+          y: (hash(i * 0.61) - 0.5) * 0.022,
+          z: (hash(i * 0.91) - 0.5) * 0.016,
         }
       })
 
-      // ── Resize handler ─────────────────────────────────────────
+      // ── Resize ─────────────────────────────────────────────────
       const handleResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
       }
       window.addEventListener("resize", handleResize)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(containerRef.current as any)._resize = handleResize
 
       // ── Animation loop ─────────────────────────────────────────
       const animate = () => {
         animationId = requestAnimationFrame(animate)
         const { chapter: ch, scrollProgress: sp } = stateRef.current
 
-        // Light transitions
+        // — Light transitions —
         if (ch === 1) {
           mainLight.color.setHex(0xff3300)
-          mainLight.intensity += (0.4 - mainLight.intensity) * 0.05
-          fillLight.intensity += (0.1 - fillLight.intensity) * 0.05
+          mainLight.intensity += (0.38 - mainLight.intensity) * 0.05
+          fillLight.intensity += (0.08 - fillLight.intensity) * 0.05
+          spotLight.intensity += (0.0 - spotLight.intensity) * 0.05
         } else if (ch === 2) {
           mainLight.color.setHex(0xffaa44)
-          mainLight.intensity += (0.6 - mainLight.intensity) * 0.05
+          mainLight.intensity += (0.65 - mainLight.intensity) * 0.05
           fillLight.intensity += (0.2 - fillLight.intensity) * 0.05
+          spotLight.intensity += (0.25 - spotLight.intensity) * 0.05
         } else {
           mainLight.color.setHex(0xffd700)
-          mainLight.intensity += (1.0 - mainLight.intensity) * 0.05
-          fillLight.intensity += (0.4 - fillLight.intensity) * 0.05
+          mainLight.intensity += (1.1 - mainLight.intensity) * 0.05
+          fillLight.intensity += (0.38 - fillLight.intensity) * 0.05
+          spotLight.intensity += (0.6 - spotLight.intensity) * 0.05
         }
 
-        meshes.forEach((mesh, i) => {
+        // — Mesh animation —
+        allMeshes.forEach((mesh) => {
           const rest = mesh.userData.restPos
           const scatter = mesh.userData.scatterPos
+          const restRot = mesh.userData.restRot
           const rotSpeed = mesh.userData.scatterRotSpeed
 
           if (ch === 1) {
-            // Scatter: lerp to scatter positions, each mesh self-rotates
+            // Scatter: drift to scattered positions, each piece self-rotates
             mesh.position.x += (scatter.x - mesh.position.x) * 0.03
             mesh.position.y += (scatter.y - mesh.position.y) * 0.03
             mesh.position.z += (scatter.z - mesh.position.z) * 0.03
@@ -181,7 +237,7 @@ export function CrownScene({ chapter, scrollProgress }: CrownSceneProps) {
             mesh.rotation.y += rotSpeed.y
             mesh.rotation.z += rotSpeed.z
           } else if (ch === 2) {
-            // Gather: interpolate between scatter and rest based on eased scrollProgress
+            // Gather: eased interpolation scatter → rest driven by scrollProgress
             const t = easeInOutCubic(Math.max(0, Math.min(1, sp)))
             const tx = scatter.x + (rest.x - scatter.x) * t
             const ty = scatter.y + (rest.y - scatter.y) * t
@@ -189,61 +245,53 @@ export function CrownScene({ chapter, scrollProgress }: CrownSceneProps) {
             mesh.position.x += (tx - mesh.position.x) * 0.08
             mesh.position.y += (ty - mesh.position.y) * 0.08
             mesh.position.z += (tz - mesh.position.z) * 0.08
-
-            const restRot = mesh.userData.restRot
             mesh.rotation.x += (restRot.x - mesh.rotation.x) * 0.08 * t
             mesh.rotation.y += (restRot.y - mesh.rotation.y) * 0.08 * t
             mesh.rotation.z += (restRot.z - mesh.rotation.z) * 0.08 * t
           } else {
-            // Crown: snap to rest, whole scene rotates
+            // Crown: snap to rest, whole scene rotates slowly
             mesh.position.x += (rest.x - mesh.position.x) * 0.05
             mesh.position.y += (rest.y - mesh.position.y) * 0.05
             mesh.position.z += (rest.z - mesh.position.z) * 0.05
-
-            const restRot = mesh.userData.restRot
             mesh.rotation.x += (restRot.x - mesh.rotation.x) * 0.05
             mesh.rotation.y += (restRot.y - mesh.rotation.y) * 0.05
             mesh.rotation.z += (restRot.z - mesh.rotation.z) * 0.05
           }
         })
 
-        // Whole-scene y-rotation in chapter 3
+        // Whole-scene slow rotation in chapter 3
         if (ch === 3) {
           scene.rotation.y += 0.003
         } else {
-          scene.rotation.y *= 0.98 // gentle slow-down
+          scene.rotation.y *= 0.97
         }
 
         renderer.render(scene, camera)
       }
       animate()
-
-      // Store resize handler for cleanup
-      ;(containerRef.current as HTMLDivElement & { _resize?: () => void })._resize = handleResize
     }
 
     init()
 
     return () => {
       cancelAnimationFrame(animationId)
-      window.removeEventListener("resize", (containerRef.current as HTMLDivElement & { _resize?: () => void })?._resize ?? (() => {}))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      window.removeEventListener("resize", (containerRef.current as any)?._resize ?? (() => {}))
       if (renderer) {
         renderer.dispose()
         if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
           containerRef.current.removeChild(renderer.domElement)
         }
       }
-      meshes.forEach((m) => {
+      allMeshes.forEach((m) => {
         m.geometry.dispose()
-        if (Array.isArray(m.material)) {
-          m.material.forEach((mat) => mat.dispose())
-        } else {
-          (m.material as import("three").Material).dispose()
-        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (Array.isArray(m.material)) m.material.forEach((mat: any) => mat.dispose())
+        else m.material.dispose()
       })
-      meshes = []
+      allMeshes = []
     }
-  }, []) // Only runs once; state is synced via stateRef
+  }, [])
 
   return <div ref={containerRef} className="fixed inset-0 z-0 pointer-events-none" />
 }
