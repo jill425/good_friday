@@ -1,0 +1,235 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #0a0e17;
+  --foreground: #e8e0d4;
+  --card: #0f1520;
+  --card-foreground: #e8e0d4;
+  --popover: #0f1520;
+  --popover-foreground: #e8e0d4;
+  --primary: #c4923a;
+  --primary-foreground: #0a0e17;
+  --secondary: #1a2744;
+  --secondary-foreground: #e8e0d4;
+  --muted: #1a2744;
+  --muted-foreground: #6b7a94;
+  --accent: #c4923a;
+  --accent-foreground: #0a0e17;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: #1e2d4a;
+  --input: #1e2d4a;
+  --ring: #c4923a;
+  --radius: 0.625rem;
+
+  --boat-deep: #050810;
+  --boat-navy: #0a0e17;
+  --boat-storm: #1a2744;
+  --boat-ocean: #0d1b2a;
+  --boat-cream: #e8e0d4;
+  --boat-amber: #c4923a;
+  --boat-pale: #b8a994;
+  --boat-mist: #4a5568;
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-serif: 'Libre Baskerville', 'Georgia', serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-boat-deep: var(--boat-deep);
+  --color-boat-navy: var(--boat-navy);
+  --color-boat-storm: var(--boat-storm);
+  --color-boat-ocean: var(--boat-ocean);
+  --color-boat-cream: var(--boat-cream);
+  --color-boat-amber: var(--boat-amber);
+  --color-boat-pale: var(--boat-pale);
+  --color-boat-mist: var(--boat-mist);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  ::selection {
+    background-color: var(--boat-amber);
+    color: var(--boat-deep);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for immersive experience */
+body::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Grain texture overlay */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Ink wash filter for images */
+.ink-wash {
+  filter: grayscale(0.7) contrast(1.4) brightness(0.7);
+  mix-blend-mode: luminosity;
+}
+
+.ink-wash-dark {
+  filter: grayscale(0.8) contrast(1.6) brightness(0.5);
+  mix-blend-mode: luminosity;
+}
+
+/* Rain animation */
+@keyframes rain-fall {
+  0% {
+    transform: translateY(-100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(-20px);
+    opacity: 0;
+  }
+}
+
+.rain-drop {
+  position: absolute;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(174, 194, 224, 0.4), transparent);
+  animation: rain-fall linear infinite;
+}
+
+/* Lightning flash */
+@keyframes lightning-flash {
+  0%, 100% { opacity: 0; }
+  1% { opacity: 0.6; }
+  2% { opacity: 0; }
+  3% { opacity: 0.3; }
+  4% { opacity: 0; }
+}
+
+.lightning {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 20%, rgba(200, 210, 255, 0.8), transparent 60%);
+  pointer-events: none;
+}
+
+/* Fog drift */
+@keyframes fog-drift {
+  0% {
+    transform: translateX(-20%) translateY(0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.3;
+  }
+  75% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateX(20%) translateY(-10%);
+    opacity: 0;
+  }
+}
+
+.fog-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(74, 85, 104, 0.3), transparent 70%);
+  animation: fog-drift ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Wave animation */
+@keyframes wave-motion {
+  0% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-5%) translateY(-3px); }
+  50% { transform: translateX(-10%) translateY(0); }
+  75% { transform: translateX(-5%) translateY(3px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+/* Narrative text styles */
+.narrative-text {
+  font-family: var(--font-serif);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.narrative-text-large {
+  font-family: var(--font-serif);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* Scene transitions */
+.scene-vignette {
+  box-shadow: inset 0 0 150px 60px rgba(5, 8, 16, 0.8);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .rain-drop,
+  .fog-layer {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .lightning {
+    display: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
