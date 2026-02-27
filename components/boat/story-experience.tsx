@@ -13,8 +13,8 @@ const CHAPTERS = [
   { id: "chapter-1", title: "The Calm", number: 1 },
   { id: "chapter-2", title: "The Warning", number: 2 },
   { id: "chapter-3", title: "The Storm", number: 3 },
-  { id: "chapter-4", title: "The Rescue", number: 4 },
-  { id: "chapter-5", title: "The Dawn", number: 5 },
+  // { id: "chapter-4", title: "The Rescue", number: 4 },
+  // { id: "chapter-5", title: "The Dawn", number: 5 },
 ] as const
 
 type Soundscape = "calm" | "warning" | "storm" | "rescue" | "dawn"
