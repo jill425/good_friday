@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Volume2, VolumeX } from "lucide-react"
 
-type Soundscape = "calm" | "warning" | "storm" | "rescue" | "dawn"
+type Soundscape = "broken" | "gather" | "crown"
 
 interface SoundControllerProps {
   currentSoundscape: Soundscape
@@ -84,30 +84,25 @@ export function SoundController({ currentSoundscape }: SoundControllerProps) {
       }
 
       const configs: Record<Soundscape, () => void> = {
-        calm: () => {
-          nodesRef.current.set("wind1", createWind(80, 0.03))
-          nodesRef.current.set("rumble1", createRumble(40, 0.04))
+        // Chapter 1: broken — low dark sawtooth + detuned beat oscillators (220Hz/223Hz)
+        broken: () => {
+          nodesRef.current.set("rumble1", createRumble(35, 0.06))
+          nodesRef.current.set("wind1", createWind(220, 0.04))
+          nodesRef.current.set("wind2", createWind(223, 0.04)) // beating interval creates tension
         },
-        warning: () => {
-          nodesRef.current.set("wind1", createWind(120, 0.06))
-          nodesRef.current.set("wind2", createWind(90, 0.04))
-          nodesRef.current.set("rumble1", createRumble(50, 0.05))
+        // Chapter 2: gather — perfect fifth drones (55Hz A + 82Hz E) + rising wind
+        gather: () => {
+          nodesRef.current.set("rumble1", createRumble(55, 0.05))
+          nodesRef.current.set("rumble2", createRumble(82, 0.04))
+          nodesRef.current.set("wind1", createWind(110, 0.03))
         },
-        storm: () => {
-          nodesRef.current.set("wind1", createWind(200, 0.1))
-          nodesRef.current.set("wind2", createWind(150, 0.08))
-          nodesRef.current.set("wind3", createWind(100, 0.06))
-          nodesRef.current.set("rumble1", createRumble(35, 0.08))
-          nodesRef.current.set("rumble2", createRumble(55, 0.06))
-        },
-        rescue: () => {
-          nodesRef.current.set("wind1", createWind(180, 0.08))
-          nodesRef.current.set("wind2", createWind(130, 0.06))
-          nodesRef.current.set("rumble1", createRumble(45, 0.07))
-        },
-        dawn: () => {
-          nodesRef.current.set("wind1", createWind(60, 0.02))
-          nodesRef.current.set("rumble1", createRumble(30, 0.03))
+        // Chapter 3: crown — major triad (55A + 69C# + 82E + 110A) + bright 440Hz overtone
+        crown: () => {
+          nodesRef.current.set("rumble1", createRumble(55, 0.05))
+          nodesRef.current.set("rumble2", createRumble(69, 0.04))
+          nodesRef.current.set("rumble3", createRumble(82, 0.04))
+          nodesRef.current.set("rumble4", createRumble(110, 0.03))
+          nodesRef.current.set("wind1", createWind(440, 0.02)) // bright shimmer
         },
       }
 

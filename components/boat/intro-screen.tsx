@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import Image from "next/image"
-import { Particles } from "./atmospheric-effects"
 
 interface IntroScreenProps {
   onComplete: () => void
@@ -27,23 +25,12 @@ export function IntroScreen({ onComplete }: IntroScreenProps) {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[70] flex flex-col items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-[70] flex flex-col items-center justify-center overflow-hidden bg-boat-deep"
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Background image */}
-          <div className="absolute inset-0">
-            <Image
-              src="/images/intro-ocean.jpg"
-              alt=""
-              fill
-              className="object-cover ink-wash-dark"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-boat-deep/60 via-boat-deep/40 to-boat-deep/80" />
-          </div>
-
-          <Particles count={30} />
+          {/* Pure black background — Three.js crown shows through */}
+          <div className="absolute inset-0 bg-gradient-to-b from-boat-deep/80 via-boat-deep/40 to-boat-deep/80" />
 
           {/* Title content */}
           <div className="relative z-10 flex flex-col items-center gap-8 px-6">
@@ -60,7 +47,7 @@ export function IntroScreen({ onComplete }: IntroScreenProps) {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="text-xs tracking-[0.4em] uppercase font-sans text-boat-pale"
             >
-              An Interactive Graphic Novel
+              A Meditation on Suffering and Glory
             </motion.p>
 
             <motion.h1
@@ -70,7 +57,7 @@ export function IntroScreen({ onComplete }: IntroScreenProps) {
               className="text-4xl md:text-6xl lg:text-8xl font-bold text-boat-cream text-center tracking-wide text-balance"
               style={{ fontFamily: "var(--font-libre)" }}
             >
-              The Lighthouse Keeper
+              Good Friday
             </motion.h1>
 
             <motion.div
@@ -84,9 +71,9 @@ export function IntroScreen({ onComplete }: IntroScreenProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.4 }}
               transition={{ duration: 0.8, delay: 1.5 }}
-              className="text-sm font-sans text-boat-pale max-w-md text-center leading-relaxed"
+              className="text-sm font-sans text-boat-pale max-w-md text-center leading-relaxed tracking-[0.15em] uppercase"
             >
-              A story of solitude, duty, and the relentless sea
+              Broken. Gathered. Crowned.
             </motion.p>
           </div>
 
