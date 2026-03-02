@@ -2,12 +2,13 @@
 
 import { useRef } from "react"
 import { motion, useScroll, useTransform, useSpring } from "motion/react"
+import type { UseScrollOptions } from "framer-motion"
 
 interface ParallaxLayerProps {
   children: React.ReactNode
   speed?: number
   className?: string
-  offset?: [string, string]
+  offset?: UseScrollOptions["offset"]
 }
 
 export function ParallaxLayer({
@@ -19,7 +20,7 @@ export function ParallaxLayer({
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: offset as [string, string],
+    offset: offset,
   })
 
   const rawY = useTransform(scrollYProgress, [0, 1], [speed * -100, speed * 100])

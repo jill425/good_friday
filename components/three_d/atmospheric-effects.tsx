@@ -14,8 +14,10 @@ export function Rain({ intensity = "medium", className = "" }: RainProps) {
   const counts = { light: 40, medium: 80, heavy: 150 }
   const count = counts[intensity]
 
-  const drops = useMemo(
-    () =>
+  const [drops, setDrops] = useState<Array<{ id: number; left: string; height: string; duration: string; delay: string; opacity: number }>>([])
+
+  useEffect(() => {
+    setDrops(
       Array.from({ length: count }, (_, i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
@@ -23,9 +25,9 @@ export function Rain({ intensity = "medium", className = "" }: RainProps) {
         duration: `${0.4 + Math.random() * 0.6}s`,
         delay: `${Math.random() * 2}s`,
         opacity: 0.2 + Math.random() * 0.4,
-      })),
-    [count]
-  )
+      }))
+    )
+  }, [count])
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none z-30 ${className}`}>
@@ -158,8 +160,10 @@ interface ParticlesProps {
 }
 
 export function Particles({ count = 20, className = "" }: ParticlesProps) {
-  const particles = useMemo(
-    () =>
+  const [particles, setParticles] = useState<Array<{ id: number; left: string; top: string; size: number; duration: number; delay: number }>>([])
+
+  useEffect(() => {
+    setParticles(
       Array.from({ length: count }, (_, i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
@@ -167,9 +171,9 @@ export function Particles({ count = 20, className = "" }: ParticlesProps) {
         size: 1 + Math.random() * 2,
         duration: 10 + Math.random() * 20,
         delay: Math.random() * 10,
-      })),
-    [count]
-  )
+      }))
+    )
+  }, [count])
 
   return (
     <div className={`absolute inset-0 pointer-events-none overflow-hidden z-15 ${className}`}>
