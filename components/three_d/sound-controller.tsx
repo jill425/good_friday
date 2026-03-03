@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { Volume2, VolumeX } from "lucide-react"
 
 export function SoundController() {
-  const [isMuted, setIsMuted] = useState(true)
+  const [isMuted, setIsMuted] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -13,7 +13,7 @@ export function SoundController() {
     if (!isInitialized) {
       const audio = new Audio('/sounds/cello-circle.m4a')
       audio.loop = true
-      audio.volume = 0.5
+      audio.volume = 0.7
       audio.play().catch(e => console.error("Audio playback failed:", e))
       audioRef.current = audio
 
@@ -30,12 +30,30 @@ export function SoundController() {
     }
   }, [isInitialized, isMuted])
 
+  // 頁面載入後自動播放；若瀏覽器擋下，偵測第一次互動再播放
   useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current.src = ""
+    const audio = new Audio('/sounds/cello-circle.m4a')
+    audio.loop = true
+    audio.volume = 0.7
+    audioRef.current = audio
+    setIsInitialized(true)
+
+    audio.play().catch(() => {
+      // 瀏覽器自動播放被擋，等使用者第一次互動
+      const resume = () => {
+        audio.play().catch(() => { })
+        window.removeEventListener("click", resume)
+        window.removeEventListener("scroll", resume)
+        window.removeEventListener("touchstart", resume)
       }
+      window.addEventListener("click", resume, { once: true })
+      window.addEventListener("scroll", resume, { once: true })
+      window.addEventListener("touchstart", resume, { once: true })
+    })
+
+    return () => {
+      audio.pause()
+      audio.src = ""
     }
   }, [])
 

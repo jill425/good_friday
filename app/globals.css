@@ -36,9 +36,7 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
   --font-serif: 'Libre Baskerville', 'Georgia', serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -125,81 +123,6 @@ body {
   mix-blend-mode: luminosity;
 }
 
-/* Rain animation */
-@keyframes rain-fall {
-  0% {
-    transform: translateY(-100vh) translateX(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) translateX(-20px);
-    opacity: 0;
-  }
-}
-
-.rain-drop {
-  position: absolute;
-  width: 1px;
-  background: linear-gradient(to bottom, transparent, rgba(174, 194, 224, 0.4), transparent);
-  animation: rain-fall linear infinite;
-}
-
-/* Lightning flash */
-@keyframes lightning-flash {
-  0%, 100% { opacity: 0; }
-  1% { opacity: 0.6; }
-  2% { opacity: 0; }
-  3% { opacity: 0.3; }
-  4% { opacity: 0; }
-}
-
-.lightning {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 20%, rgba(200, 210, 255, 0.8), transparent 60%);
-  pointer-events: none;
-}
-
-/* Fog drift */
-@keyframes fog-drift {
-  0% {
-    transform: translateX(-20%) translateY(0);
-    opacity: 0;
-  }
-  25% {
-    opacity: 0.3;
-  }
-  75% {
-    opacity: 0.15;
-  }
-  100% {
-    transform: translateX(20%) translateY(-10%);
-    opacity: 0;
-  }
-}
-
-.fog-layer {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, rgba(74, 85, 104, 0.3), transparent 70%);
-  animation: fog-drift ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* Wave animation */
-@keyframes wave-motion {
-  0% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-5%) translateY(-3px); }
-  50% { transform: translateX(-10%) translateY(0); }
-  75% { transform: translateX(-5%) translateY(3px); }
-  100% { transform: translateX(0) translateY(0); }
-}
 
 /* Narrative text styles */
 .narrative-text {
@@ -214,10 +137,6 @@ body {
   letter-spacing: 0.01em;
 }
 
-/* Scene transitions */
-.scene-vignette {
-  box-shadow: inset 0 0 150px 60px rgba(5, 8, 16, 0.8);
-}
 
 /* Chapter 3 crown glow overlay */
 @keyframes crown-pulse {
@@ -235,14 +154,6 @@ body {
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .rain-drop,
-  .fog-layer {
-    animation: none !important;
-    opacity: 0 !important;
-  }
-  .lightning {
-    display: none !important;
-  }
   html {
     scroll-behavior: auto;
   }

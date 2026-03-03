@@ -1,11 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
 import { Libre_Baskerville } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ['latin'] })
-const _geistMono = Geist_Mono({ subsets: ['latin'] })
 const _libreBaskerville = Libre_Baskerville({
   subsets: ['latin'],
   weight: ['400', '700'],
@@ -52,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${_libreBaskerville.variable} font-sans antialiased`}
+        className={`${_libreBaskerville.variable} font-serif antialiased`}
       >
         {children}
         <Analytics />

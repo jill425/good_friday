@@ -28,7 +28,7 @@ export function CrownOfThorns() {
                     transition={{ delay: 0.8, duration: 1 }}
                     className="text-xs tracking-[0.25em] uppercase text-boat-pale/50 font-sans"
                 >
-                    台北旌旗教會
+                    受難晚會 2026
                 </motion.span>
                 <motion.span
                     initial={{ opacity: 0 }}
@@ -36,38 +36,46 @@ export function CrownOfThorns() {
                     transition={{ delay: 0.8, duration: 1 }}
                     className="text-xs tracking-[0.2em] text-boat-pale/40 font-sans"
                 >
-                    受難晚會 2026
+                    台北旌旗教會
                 </motion.span>
             </header>
 
+            <motion.section
+                className="relative z-20 min-h-screen flex justify-center items-center px-6 pointer-events-none"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+            >
+                <img
+                    src="/images/under_crown_title.png"
+                    alt=""
+                    className="w-full max-w-lg"
+                    style={{ filter: "invert(1) sepia(0.2) brightness(0.5)" }}
+                />
+            </motion.section>
             {/* ── 敘事內容 ──────────────────────────────────────────── */}
             <section className="relative z-20 pointer-events-none" style={{ minHeight: "450vh" }}>
-                <div className="sticky top-0 h-screen flex items-center justify-center pointer-events-none">
+                <div className="sticky top-0 h-screen flex items-center justify-center pointer-events-none" style={{ marginBottom: "-100vh" }}>
                     <Particles count={20} />
                     <AmbientGlow color="rgba(196, 146, 58, 0.12)" position="center" />
                 </div>
 
-                <div className="relative flex flex-col items-center gap-24 px-6 py-40 max-w-xl mx-auto pointer-events-auto">
+                <div className="relative flex flex-col items-center gap-24 px-6 py-8 max-w-xl mx-auto pointer-events-auto">
 
                     {/* ── 詩意段落 ── */}
+                    <NarrativeText mode="line" size="lg" className="text-boat-amber" delay={0.1}>
+                        {"冠冕\n戴上時並不榮耀"}
+                    </NarrativeText>
                     <NarrativeText mode="line" size="md" delay={0.1}>
-                        {"有些冠冕\n戴上時並不榮耀。"}
+                        {"那一夜 在無人理解的黑暗裡\n祂放下權柄\n承擔不屬於祂的重量"}
                     </NarrativeText>
 
                     <NarrativeText mode="line" size="md" delay={0.1}>
-                        {"有些路\n明知道沉重，仍然選擇走上去。"}
+                        {"那一個清晨 復活的曙光劃破沈默\n同一頂冠冕\n在光中顯出不同的意義"}
                     </NarrativeText>
 
                     <NarrativeText mode="line" size="md" delay={0.1}>
-                        {"那一夜，祂放下權柄\n在無人理解的黑暗裡\n承擔本不屬於祂的重量"}
-                    </NarrativeText>
-
-                    <NarrativeText mode="line" size="md" delay={0.1}>
-                        {"那一個清晨，沉默被打破\n同一頂冠冕，卻在光中顯出不同的意義。"}
-                    </NarrativeText>
-
-                    <NarrativeText mode="line" size="md" delay={0.1}>
-                        {"我們都知道，有些放下很痛\n有些順服，需要代價。"}
+                        {"有些放下很痛 有些順服 需要代價"}
                     </NarrativeText>
 
                     {/* ── 分隔線 ── */}
@@ -85,10 +93,12 @@ export function CrownOfThorns() {
                         style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(1.15rem, 3vw, 1.5rem)" }}
                     >
                         4 / 3（五）、4 / 5（日）<br />
-                        我們邀請你走進這段時刻<br />
-                        在沉重與榮耀之間<br />
+                        邀請你走進這段時刻<br /><br />
+
                         <span className="text-boat-amber">
-                            也許，你會重新看見——那份為你而來的愛。
+                            在沉重與榮耀之間<br />
+                            會重新看見
+                            那份為你而來的愛。
                         </span>
                     </motion.p>
 

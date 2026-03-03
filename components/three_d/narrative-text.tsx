@@ -96,7 +96,7 @@ export function NarrativeText({
             delay: delay + i * 0.3,
             ease: "easeOut",
           }}
-          className="leading-relaxed text-boat-cream"
+          className={`leading-relaxed ${className || "text-boat-cream"}`}
         >
           {line.trim()}
         </motion.p>
@@ -105,47 +105,3 @@ export function NarrativeText({
   )
 }
 
-interface ChapterTitleProps {
-  chapter: number
-  title: string
-  className?: string
-}
-
-export function ChapterTitle({ chapter, title, className = "" }: ChapterTitleProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: false, margin: "-20% 0px -20% 0px" })
-
-  return (
-    <div ref={ref} className={`flex flex-col items-center gap-4 ${className}`}>
-      <motion.span
-        initial={{ opacity: 0, scaleX: 0 }}
-        animate={isInView ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="block w-16 h-px bg-boat-amber"
-      />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 0.6 } : { opacity: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-xs tracking-[0.3em] uppercase text-boat-pale font-sans"
-      >
-        Chapter {chapter}
-      </motion.span>
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-        className="text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-boat-cream tracking-wide text-balance text-center"
-        style={{ fontFamily: "var(--font-libre)" }}
-      >
-        {title}
-      </motion.h2>
-      <motion.span
-        initial={{ opacity: 0, scaleX: 0 }}
-        animate={isInView ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: 0 }}
-        transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-        className="block w-16 h-px bg-boat-amber"
-      />
-    </div>
-  )
-}

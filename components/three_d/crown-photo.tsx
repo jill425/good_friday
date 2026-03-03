@@ -11,8 +11,8 @@ export function CrownPhoto() {
     let animId: number
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let renderer: any, scene: any, camera: any, crown: any
-    let targetRotX = Math.PI
-    let currentRotX = Math.PI
+    let targetRotX = Math.PI * 1.25
+    let currentRotX = Math.PI * 1.25
 
     const init = async () => {
       const THREE = await import("three")
@@ -55,7 +55,7 @@ export function CrownPhoto() {
 
       // ── Load GLB ───────────────────────────────────────────────
       const loader = new GLTFLoader()
-      const gltf = await loader.loadAsync("/images/crown.glb")
+      const gltf = await loader.loadAsync("/models/crown.glb")
       crown = gltf.scene
 
       const box = new THREE.Box3().setFromObject(crown)
@@ -71,8 +71,8 @@ export function CrownPhoto() {
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight
         const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0
 
-        // 0% scroll = 180°, 100% scroll = 0°
-        targetRotX = Math.PI * (1 - progress)
+        // 0% scroll = 225°, 100% scroll = 0°
+        targetRotX = Math.PI * 1.25 * (1 - progress)
 
       }
       window.addEventListener("scroll", onScroll, { passive: true })
