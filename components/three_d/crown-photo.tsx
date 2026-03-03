@@ -67,13 +67,16 @@ export function CrownPhoto() {
       scene.add(crown)
 
       // ── Scroll → rotation + parallax ──────────────────────────
+      // Cache maxScroll here; DO NOT recalculate inside onScroll.
+      // On mobile, the browser URL bar collapses when scrolling, which changes
+      // window.innerHeight mid-scroll and causes maxScroll to jump → crown jolts.
+      let maxScroll = document.documentElement.scrollHeight - window.innerHeight
+
       const onScroll = () => {
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight
         const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0
 
         // 0% scroll = 225°, 100% scroll = 0°
         targetRotX = Math.PI * 1.25 * (1 - progress)
-
       }
       window.addEventListener("scroll", onScroll, { passive: true })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,6 +87,8 @@ export function CrownPhoto() {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
+        // Recalculate maxScroll only on genuine resize (orientation change, etc.)
+        maxScroll = document.documentElement.scrollHeight - window.innerHeight
       }
       window.addEventListener("resize", onResize)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
