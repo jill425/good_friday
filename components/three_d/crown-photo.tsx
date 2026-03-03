@@ -1,9 +1,11 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { motion } from "motion/react"
 
 export function CrownPhoto() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -57,6 +59,7 @@ export function CrownPhoto() {
       const loader = new GLTFLoader()
       const gltf = await loader.loadAsync("/models/crown.glb")
       crown = gltf.scene
+      setIsLoaded(true)
 
       const box = new THREE.Box3().setFromObject(crown)
       const center = box.getCenter(new THREE.Vector3())
@@ -127,8 +130,11 @@ export function CrownPhoto() {
   }, [])
 
   return (
-    <div
+    <motion.div
       ref={containerRef}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isLoaded ? 1 : 0 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
       className="fixed inset-0 z-0 pointer-events-none"
     />
   )
