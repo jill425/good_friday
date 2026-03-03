@@ -48,6 +48,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preload" href="/models/crown.glb" as="fetch" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${_libreBaskerville.variable} font-serif antialiased`}
       >

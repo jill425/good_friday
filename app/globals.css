@@ -75,10 +75,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
   }
+
   ::selection {
     background-color: var(--boat-amber);
     color: var(--boat-deep);
@@ -88,6 +90,7 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
 /* Hide scrollbar for immersive experience */
@@ -95,6 +98,7 @@ body::-webkit-scrollbar {
   width: 0;
   display: none;
 }
+
 body {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -140,8 +144,15 @@ body {
 
 /* Chapter 3 crown glow overlay */
 @keyframes crown-pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 .crown-glow-overlay {
