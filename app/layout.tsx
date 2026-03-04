@@ -11,27 +11,10 @@ const _libreBaskerville = Libre_Baskerville({
 })
 
 export const metadata: Metadata = {
-  title: 'The Lighthouse Keeper - An Interactive Graphic Novel',
+  title: '受難晚會 2026 — 台北旌旗教會',
   description:
-    'An immersive scroll-driven graphic novel about a solitary keeper guiding ships through a catastrophic storm. Inspired by SBS\'s The Boat.',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    // apple: '/apple-icon.png',
-  },
+    '在沉重與榮耀之間，重新看見那份為你而來的愛。受難晚會 4/3（五）、復活主日 4/5（日），台北旌旗教會。',
+
 }
 
 export const viewport: Viewport = {
@@ -47,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="zh-Hant">
       <head>
         <link rel="preload" href="/models/crown.glb" as="fetch" crossOrigin="anonymous" />
       </head>

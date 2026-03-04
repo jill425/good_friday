@@ -90,7 +90,6 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
 }
 
 /* Hide scrollbar for immersive experience */

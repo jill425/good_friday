@@ -1,11 +1,16 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { motion } from "motion/react"
 import { NarrativeText } from "./narrative-text"
 import { Particles, AmbientGlow } from "./atmospheric-effects"
 import { ProgressBar } from "./progress-bar"
 import { SoundController } from "./sound-controller"
-import { CrownPhoto } from "@/components/three_d/crown-photo"
+
+const CrownPhoto = dynamic(
+    () => import("@/components/experience/crown-photo").then(m => ({ default: m.CrownPhoto })),
+    { ssr: false }
+)
 
 const fadeUp = {
     initial: { opacity: 0, y: 24 },
@@ -15,7 +20,7 @@ const fadeUp = {
 
 export function CrownOfThorns() {
     return (
-        <div className="relative bg-boat-deep overflow-x-hidden">
+        <div className="relative bg-boat-deep">
             <CrownPhoto />
             <div className="grain-overlay" />
             <ProgressBar />
@@ -50,7 +55,7 @@ export function CrownOfThorns() {
             >
                 <img
                     src="/images/under_crown_title.png"
-                    alt=""
+                    alt="冠冕之下 — 受難晚會 2026"
                     className="w-full max-w-lg"
                     style={{ filter: "invert(1) sepia(0.2) brightness(0.5)" }}
                 />
@@ -63,11 +68,23 @@ export function CrownOfThorns() {
                     <AmbientGlow color="rgba(196, 146, 58, 0.12)" position="center" />
                 </div>
 
+                {/* ── 經文 ── */}
                 <div className="relative flex flex-col items-center max-w-xl mx-auto pointer-events-auto">
+
+                    {/* ── 經文：馬太福音 27:28-29 ── */}
+                    <div className="min-h-[50vh] flex flex-col items-center justify-center px-6 py-12" style={{ scrollSnapAlign: "center" }}>
+
+                        <NarrativeText mode="line" size="md" delay={0.2}>
+                            {"他們剝下耶穌的衣服\n給祂披上一件朱紅色長袍\n用荊棘編成冠冕 戴在祂頭上\n又拿一根葦稈放在祂右手裡\n跪在祂跟前戲弄祂 說 \n「猶太人的王萬歲！」"}
+                        </NarrativeText>
+                        <NarrativeText mode="line" size="sm" align="right" color="text-boat-pale/60" delay={0.2} className="mt-4 mb-8 !max-w-fit !ml-auto !mr-0">
+                            {"馬太福音27 28-29"}
+                        </NarrativeText>
+                    </div>
 
                     {/* ── 詩意段落 ── */}
                     <div className="min-h-screen flex items-center justify-center px-6 py-8" style={{ scrollSnapAlign: "center" }}>
-                        <NarrativeText mode="line" size="lg" className="text-boat-amber" delay={0.1}>
+                        <NarrativeText mode="line" size="lg" color="text-boat-amber" delay={0.1}>
                             {"冠冕\n戴上時並不榮耀"}
                         </NarrativeText>
                     </div>
@@ -86,6 +103,17 @@ export function CrownOfThorns() {
                     <div className="min-h-screen flex items-center justify-center px-6 py-8" style={{ scrollSnapAlign: "center" }}>
                         <NarrativeText mode="line" size="md" delay={0.1}>
                             {"有些放下很痛 有些順服 需要代價"}
+                        </NarrativeText>
+                    </div>
+
+                    {/* ── 經文：啟示錄 19:12-13 ── */}
+                    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ scrollSnapAlign: "center" }}>
+
+                        <NarrativeText mode="line" size="md" delay={0.2}>
+                            {"祂憑公義審判和爭戰\n祂雙目如炬 頭上戴了許多冠冕\n身上寫著一個只有祂自己才明白的名字\n祂穿著被血浸透的衣服\n祂的名字是「上帝的道」"}
+                        </NarrativeText>
+                        <NarrativeText mode="line" size="sm" align="right" color="text-boat-pale/60" delay={0.2} className="mt-4 mb-8 !max-w-fit !ml-auto !mr-0">
+                            {"啟示錄19 12-13"}
                         </NarrativeText>
                     </div>
 
@@ -109,7 +137,7 @@ export function CrownOfThorns() {
                             <span className="text-boat-amber">
                                 在沉重與榮耀之間<br />
                                 會重新看見
-                                那份為你而來的愛。
+                                那份為你而來的愛
                             </span>
                         </motion.p>
                     </div>
@@ -122,7 +150,7 @@ export function CrownOfThorns() {
                             className="w-full flex flex-col sm:flex-row gap-4"
                         >
                             {/* 受難晚會 */}
-                            <div className="flex-1 border border-boat-amber/30 rounded-sm px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
+                            <div className="flex-1 border border-boat-amber/30 rounded px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
                                 <p className="text-base tracking-[0.3em] uppercase text-boat-amber font-sans">
                                     受難晚會
                                 </p>
@@ -137,7 +165,7 @@ export function CrownOfThorns() {
                             </div>
 
                             {/* 復活主日 */}
-                            <div className="flex-1 border border-boat-amber/30 rounded-sm px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
+                            <div className="flex-1 border border-boat-amber/30 rounded px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
                                 <p className="text-base tracking-[0.3em] uppercase text-boat-amber font-sans">
                                     復活主日
                                 </p>
