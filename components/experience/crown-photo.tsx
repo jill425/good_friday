@@ -182,11 +182,7 @@ export function CrownPhoto() {
       ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: isLoaded ? 1 : 0 }}
-<<<<<<< HEAD:components/three_d/crown-photo.tsx
-      transition={{ duration: 1.5, ease: "easeOut" }}
-=======
       transition={{ duration: 0.8, ease: "easeOut" }}
->>>>>>> eff18ef (feat: 3D crown experience — load optimisation, scroll narrative, sound controller, design polish):components/experience/crown-photo.tsx
       className="fixed inset-0 z-0 pointer-events-none"
     />
   )
