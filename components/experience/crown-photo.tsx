@@ -33,7 +33,7 @@ export function CrownPhoto() {
   useEffect(() => {
     if (!containerRef.current) return
 
-    let animId: number
+    let animId = 0
     let renderer: THREE.WebGLRenderer
     let scene: THREE.Scene
     let camera: THREE.PerspectiveCamera
@@ -143,12 +143,25 @@ export function CrownPhoto() {
       animate()
     }
 
-    init()
+    init().catch(err => {
+      console.warn("[CrownPhoto] Failed to initialise 3D scene:", err)
+    })
 
     return () => {
       cancelAnimationFrame(animId)
       if (onScrollRef.current) window.removeEventListener("scroll", onScrollRef.current)
       if (onResizeRef.current) window.removeEventListener("resize", onResizeRef.current)
+      if (crown) {
+        crown.traverse((obj) => {
+          const mesh = obj as THREE.Mesh
+          if (mesh.isMesh) {
+            mesh.geometry.dispose()
+            const mat = mesh.material
+            if (Array.isArray(mat)) mat.forEach(m => m.dispose())
+            else mat.dispose()
+          }
+        })
+      }
       if (renderer) {
         renderer.dispose()
         if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {

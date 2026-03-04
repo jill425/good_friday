@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
-import { motion, useInView } from "motion/react"
-import { useRef } from "react"
+import { useEffect, useState, useRef } from "react"
+import { motion, useInView, useReducedMotion } from "motion/react"
 
 
 /* ───────── Floating Particles ───────── */
@@ -13,6 +12,7 @@ interface ParticlesProps {
 
 export function Particles({ count = 20, className = "" }: ParticlesProps) {
   const [particles, setParticles] = useState<Array<{ id: number; left: string; top: string; size: number; duration: number; delay: number }>>([])
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     setParticles(
@@ -27,8 +27,10 @@ export function Particles({ count = 20, className = "" }: ParticlesProps) {
     )
   }, [count])
 
+  if (reducedMotion) return null
+
   return (
-    <div className={`absolute inset-0 pointer-events-none overflow-hidden z-15 ${className}`}>
+    <div className={`absolute inset-0 pointer-events-none overflow-hidden z-10 ${className}`}>
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -80,7 +82,7 @@ export function AmbientGlow({
   return (
     <motion.div
       ref={ref}
-      className={`absolute left-1/2 -translate-x-1/2 ${positionClasses[position]} w-[600px] h-[600px] rounded-full pointer-events-none z-5 ${className}`}
+      className={`absolute left-1/2 -translate-x-1/2 ${positionClasses[position]} w-[min(600px,100vw)] h-[min(600px,100vw)] rounded-full pointer-events-none z-0 ${className}`}
       style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }}
       animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.8 }}
       transition={{ duration: 2, ease: "easeOut" }}

@@ -1,11 +1,12 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "motion/react"
+import { motion, useInView, useReducedMotion } from "motion/react"
 
 interface NarrativeTextProps {
   children: string
   className?: string
+  color?: string
   delay?: number
   mode?: "line" | "word" | "paragraph"
   align?: "left" | "center" | "right"
@@ -28,6 +29,7 @@ const alignClasses = {
 export function NarrativeText({
   children,
   className = "",
+  color = "text-boat-cream",
   delay = 0,
   mode = "line",
   align = "center",
@@ -35,17 +37,21 @@ export function NarrativeText({
 }: NarrativeTextProps) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-10% 0px -10% 0px" })
+  const reducedMotion = useReducedMotion()
+  const visible = reducedMotion || isInView
 
   if (mode === "paragraph") {
     return (
       <motion.div
         ref={ref}
         initial={{ opacity: 0, y: 30 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+        animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 1, delay, ease: "easeOut" }}
         className={`narrative-text ${sizeClasses[size]} ${alignClasses[align]} ${className}`}
       >
-        <p className="max-w-2xl mx-auto leading-relaxed text-boat-cream">{children}</p>
+        <p className={`max-w-2xl mx-auto leading-relaxed ${color}`}>
+          {children}
+        </p>
       </motion.div>
     )
   }
@@ -61,13 +67,13 @@ export function NarrativeText({
           <motion.span
             key={i}
             initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{
               duration: 0.6,
               delay: delay + i * 0.08,
               ease: "easeOut",
             }}
-            className="inline-block text-boat-cream"
+            className={`inline-block ${color}`}
           >
             {word}
           </motion.span>
@@ -90,13 +96,13 @@ export function NarrativeText({
         <motion.p
           key={i}
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{
             duration: 0.8,
             delay: delay + i * 0.3,
             ease: "easeOut",
           }}
-          className={`leading-relaxed text-boat-cream ${className}`}
+          className={`leading-relaxed ${color} ${className}`}
         >
           {line.trim()}
         </motion.p>

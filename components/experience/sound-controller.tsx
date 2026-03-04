@@ -10,14 +10,14 @@ export function SoundController() {
 
   const toggleSound = useCallback(() => {
     if (!audioRef.current) return
-    if (isMuted) {
-      audioRef.current.play().catch(e => console.error("Audio playback failed:", e))
+    if (audioRef.current.paused) {
+      audioRef.current.play().catch(() => { })
       setIsMuted(false)
     } else {
       audioRef.current.pause()
       setIsMuted(true)
     }
-  }, [isMuted])
+  }, [])
 
   // 頁面載入後自動播放；若瀏覽器擋下，偵測第一次互動再播放
   useEffect(() => {
