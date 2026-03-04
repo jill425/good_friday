@@ -10,3 +10,6 @@ node_modules/
 .DS_Store
 .vscode
 .claude
+
+# Next.js auto-generated (regenerated on every build/dev start)
+next-env.d.ts

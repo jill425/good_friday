@@ -5,39 +5,40 @@ import { motion, AnimatePresence } from "motion/react"
 import { Volume2, VolumeX } from "lucide-react"
 
 export function SoundController() {
-  const [isMuted, setIsMuted] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const toggleSound = useCallback(() => {
-    if (!audioRef.current) return
-    if (audioRef.current.paused) {
-      audioRef.current.play().catch(() => { })
-      setIsMuted(false)
+  const toggleSound = useCallback((e: React.MouseEvent) => {
+    // 防止 window click 的 resume 監聽器同時觸發
+    e.stopPropagation()
+    const audio = audioRef.current
+    if (!audio) return
+    if (audio.paused) {
+      audio.play().catch(() => { })
+      setIsPlaying(true)
     } else {
-      audioRef.current.pause()
-      setIsMuted(true)
+      audio.pause()
+      setIsPlaying(false)
     }
   }, [])
 
-  // 頁面載入後自動播放；若瀏覽器擋下，偵測第一次互動再播放
+  // 頁面載入後自動播放；若瀏覽器擋下，等第一次 touchstart / click 再播放
+  // （scroll 不被現代行動瀏覽器視為有效的使用者手勢，無法解鎖 autoplay）
   useEffect(() => {
     const audio = new Audio('/sounds/cello-circle.m4a')
     audio.loop = true
     audio.volume = 0.8
     audioRef.current = audio
 
-    audio.play().catch(() => {
-      // 瀏覽器自動播放被擋，等使用者第一次互動（scroll / click / touchstart）再播放
-      const resume = () => {
-        audio.play().catch(() => { })
-        window.removeEventListener("click", resume)
-        window.removeEventListener("scroll", resume)
-        window.removeEventListener("touchstart", resume)
-      }
-      window.addEventListener("click", resume, { once: true })
-      window.addEventListener("scroll", resume, { once: true })
-      window.addEventListener("touchstart", resume, { once: true })
-    })
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {
+        const resume = () => {
+          audio.play().then(() => setIsPlaying(true)).catch(() => { })
+        }
+        window.addEventListener("touchstart", resume, { once: true })
+        window.addEventListener("click", resume, { once: true })
+      })
 
     return () => {
       audio.pause()
@@ -52,21 +53,21 @@ export function SoundController() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.8, duration: 0.6 }}
-      aria-label={isMuted ? "Unmute sound" : "Mute sound"}
+      aria-label={isPlaying ? "Mute sound" : "Unmute sound"}
     >
       <AnimatePresence mode="wait">
-        {isMuted ? (
-          <motion.div key="muted" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}>
-            <VolumeX size={16} className="text-boat-pale" />
+        {isPlaying ? (
+          <motion.div key="playing" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}>
+            <Volume2 size={16} className="text-boat-amber" />
           </motion.div>
         ) : (
-          <motion.div key="unmuted" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}>
-            <Volume2 size={16} className="text-boat-amber" />
+          <motion.div key="paused" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}>
+            <VolumeX size={16} className="text-boat-pale" />
           </motion.div>
         )}
       </AnimatePresence>
       <span className="text-xs font-sans text-boat-pale hidden md:inline">
-        {isMuted ? "靜音" : "播放音樂"}
+        {isPlaying ? "播放音樂" : "播放音樂"}
       </span>
     </motion.button>
   )
