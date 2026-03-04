@@ -73,11 +73,12 @@ export function CrownOfThorns() {
 
                     {/* ── 經文：馬太福音 27:28-29 ── */}
                     <div className="min-h-[50vh] flex flex-col items-center justify-center px-6 py-12" style={{ scrollSnapAlign: "center" }}>
-                        <NarrativeText mode="line" size="sm" color="text-boat-pale/60" className="mb-8">
-                            {"馬太福音 27:28-29"}
-                        </NarrativeText>
+
                         <NarrativeText mode="line" size="md" delay={0.2}>
-                            {"他們剝下耶穌的衣服，\n給祂披上一件朱紅色長袍，\n用荊棘編成冠冕，戴在祂頭上，\n又拿一根葦稈放在祂右手裡，\n跪在祂跟前戲弄祂，說：\n「猶太人的王萬歲！」"}
+                            {"他們剝下耶穌的衣服\n給祂披上一件朱紅色長袍\n用荊棘編成冠冕 戴在祂頭上\n又拿一根葦稈放在祂右手裡\n跪在祂跟前戲弄祂，說：\n「猶太人的王萬歲！」"}
+                        </NarrativeText>
+                        <NarrativeText mode="line" size="sm" align="right" color="text-boat-pale/60" className="mt-4 mb-8 !max-w-fit !ml-auto !mr-0">
+                            {"馬太福音 27:28-29"}
                         </NarrativeText>
                     </div>
 
@@ -107,11 +108,12 @@ export function CrownOfThorns() {
 
                     {/* ── 經文：啟示錄 19:12-13 ── */}
                     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12" style={{ scrollSnapAlign: "center" }}>
-                        <NarrativeText mode="line" size="sm" color="text-boat-pale/60" className="mb-8">
-                            {"啟示錄 19:12-13"}
-                        </NarrativeText>
+
                         <NarrativeText mode="line" size="md" delay={0.2}>
-                            {"祂憑公義審判和爭戰。\n祂雙目如炬，頭上戴了許多冠冕，\n身上寫著一個只有祂自己才明白的名字。\n祂穿著被血浸透的衣服，\n祂的名字是「上帝的道」。"}
+                            {"祂憑公義審判和爭戰\n祂雙目如炬 頭上戴了許多冠冕\n身上寫著一個只有祂自己才明白的名字\n祂穿著被血浸透的衣服\n祂的名字是「上帝的道」"}
+                        </NarrativeText>
+                        <NarrativeText mode="line" size="sm" align="right" color="text-boat-pale/60" className="mt-4 mb-8 !max-w-fit !ml-auto !mr-0">
+                            {"啟示錄 19:12-13"}
                         </NarrativeText>
                     </div>
 
