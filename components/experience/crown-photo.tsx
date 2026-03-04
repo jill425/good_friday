@@ -1,24 +1,50 @@
 "use client"
 
+// Static top-level imports — possible because this module is loaded with
+// next/dynamic({ ssr: false }), so it never runs on the server.
+import * as THREE from "three"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { useEffect, useRef, useState } from "react"
 import { motion } from "motion/react"
+
+// Start fetching the GLB the instant this module is parsed — before the
+// component even mounts. The ArrayBuffer is injected into THREE.Cache so
+// GLTFLoader never triggers a second network request.
+const MODEL_URL = "/models/crown.glb"
+THREE.Cache.enabled = true
+const _glbBufferPromise = fetch(MODEL_URL)
+  .then(r => r.arrayBuffer())
+  .then(buf => { THREE.Cache.add(MODEL_URL, buf) })
+  .catch(() => { /* fall back to a normal network fetch */ })
+
+// Pre-warm the Draco decoder (downloads the WASM now, in parallel with everything
+// else) so it's ready the moment GLTFLoader needs it.
+const _dracoPrewarm = new DRACOLoader()
+_dracoPrewarm.setDecoderPath("/draco/gltf/")
+_dracoPrewarm.preload()
 
 export function CrownPhoto() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const onScrollRef = useRef<(() => void) | null>(null)
+  const onResizeRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
 
     let animId: number
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let renderer: any, scene: any, camera: any, crown: any
+    let renderer: THREE.WebGLRenderer
+    let scene: THREE.Scene
+    let camera: THREE.PerspectiveCamera
+    let crown: THREE.Object3D
     let targetRotX = Math.PI * 1.25
     let currentRotX = Math.PI * 1.25
 
     const init = async () => {
-      const THREE = await import("three")
-      const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js")
+      // Wait for the pre-fetched GLB to be in THREE.Cache (usually already done
+      // by the time the user's browser finishes parsing the page JS).
+      await _glbBufferPromise
 
       // ── Renderer ──────────────────────────────────────────────
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -55,56 +81,61 @@ export function CrownPhoto() {
       topLight.position.set(0, 6, 2)
       scene.add(topLight)
 
-      // ── Load GLB ───────────────────────────────────────────────
+      // ── Load GLB (served from THREE.Cache — zero network cost) ─
       const loader = new GLTFLoader()
-      const gltf = await loader.loadAsync("/models/crown.glb")
+      loader.setDRACOLoader(_dracoPrewarm)
+      const gltf = await loader.loadAsync(MODEL_URL)
       crown = gltf.scene
       setIsLoaded(true)
 
       const box = new THREE.Box3().setFromObject(crown)
       const center = box.getCenter(new THREE.Vector3())
       const size = box.getSize(new THREE.Vector3())
-      const maxDim = Math.max(size.x, size.y, size.z)
       crown.position.sub(center)
-      crown.scale.setScalar(2.8 / maxDim)
+      crown.scale.setScalar(2.8 / Math.max(size.x, size.y, size.z))
       scene.add(crown)
 
-      // ── Scroll → rotation + parallax ──────────────────────────
-      // Cache maxScroll here; DO NOT recalculate inside onScroll.
-      // On mobile, the browser URL bar collapses when scrolling, which changes
-      // window.innerHeight mid-scroll and causes maxScroll to jump → crown jolts.
-      let maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      // ── Scroll → rotation ──────────────────────────────────────
+      // maxScroll is captured once here and refreshed only on genuine resize.
+      // Never recalculate inside onScroll — on mobile the URL bar collapsing
+      // increases clientHeight mid-scroll, shrinking the denominator and making
+      // progress jump, which snaps the crown to a wrong angle.
+      let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight
 
       const onScroll = () => {
-        const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0
-
-        // 0% scroll = 225°, 100% scroll = 0°
+        const raw = maxScroll > 0 ? window.scrollY / maxScroll : 0
+        const progress = Math.min(1, Math.max(0, raw))
         targetRotX = Math.PI * 1.25 * (1 - progress)
       }
       window.addEventListener("scroll", onScroll, { passive: true })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ; (containerRef.current as any)._onScroll = onScroll
+      onScrollRef.current = onScroll
+
+      // Sync both angles with the real scroll position BEFORE fade-in.
+      // Without this, if the user has already scrolled while the model was
+      // loading, the animation loop chases the correct angle as the crown fades
+      // in — producing the sudden zoom / jump the user sees.
+      onScroll()
+      currentRotX = targetRotX
+
+      // Fade the canvas in only after the rotation is already correct.
+      setIsLoaded(true)
 
       // ── Resize ─────────────────────────────────────────────────
       const onResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
-        // Recalculate maxScroll only on genuine resize (orientation change, etc.)
-        maxScroll = document.documentElement.scrollHeight - window.innerHeight
+        maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight
       }
       window.addEventListener("resize", onResize)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ; (containerRef.current as any)._onResize = onResize
+      onResizeRef.current = onResize
 
       // ── Animation loop ─────────────────────────────────────────
       const animate = () => {
         animId = requestAnimationFrame(animate)
         if (crown) {
-          // Smooth follow scroll-driven rotation
           currentRotX += (targetRotX - currentRotX) * 0.05
           crown.rotation.x = currentRotX
-          // Subtle Y sway to feel alive
           crown.rotation.y = Math.sin(Date.now() * 0.0003) * 0.06
         }
         renderer.render(scene, camera)
@@ -116,10 +147,8 @@ export function CrownPhoto() {
 
     return () => {
       cancelAnimationFrame(animId)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const c = containerRef.current as any
-      if (c?._onScroll) window.removeEventListener("scroll", c._onScroll)
-      if (c?._onResize) window.removeEventListener("resize", c._onResize)
+      if (onScrollRef.current) window.removeEventListener("scroll", onScrollRef.current)
+      if (onResizeRef.current) window.removeEventListener("resize", onResizeRef.current)
       if (renderer) {
         renderer.dispose()
         if (containerRef.current && renderer.domElement.parentNode === containerRef.current) {
@@ -134,7 +163,11 @@ export function CrownPhoto() {
       ref={containerRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: isLoaded ? 1 : 0 }}
+<<<<<<< HEAD:components/three_d/crown-photo.tsx
       transition={{ duration: 1.5, ease: "easeOut" }}
+=======
+      transition={{ duration: 0.8, ease: "easeOut" }}
+>>>>>>> eff18ef (feat: 3D crown experience — load optimisation, scroll narrative, sound controller, design polish):components/experience/crown-photo.tsx
       className="fixed inset-0 z-0 pointer-events-none"
     />
   )

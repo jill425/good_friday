@@ -1,11 +1,16 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { motion } from "motion/react"
 import { NarrativeText } from "./narrative-text"
 import { Particles, AmbientGlow } from "./atmospheric-effects"
 import { ProgressBar } from "./progress-bar"
 import { SoundController } from "./sound-controller"
-import { CrownPhoto } from "@/components/three_d/crown-photo"
+
+const CrownPhoto = dynamic(
+    () => import("@/components/experience/crown-photo").then(m => ({ default: m.CrownPhoto })),
+    { ssr: false }
+)
 
 const fadeUp = {
     initial: { opacity: 0, y: 24 },
@@ -122,7 +127,7 @@ export function CrownOfThorns() {
                             className="w-full flex flex-col sm:flex-row gap-4"
                         >
                             {/* 受難晚會 */}
-                            <div className="flex-1 border border-boat-amber/30 rounded-sm px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
+                            <div className="flex-1 border border-boat-amber/30 rounded px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
                                 <p className="text-base tracking-[0.3em] uppercase text-boat-amber font-sans">
                                     受難晚會
                                 </p>
@@ -137,7 +142,7 @@ export function CrownOfThorns() {
                             </div>
 
                             {/* 復活主日 */}
-                            <div className="flex-1 border border-boat-amber/30 rounded-sm px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
+                            <div className="flex-1 border border-boat-amber/30 rounded px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
                                 <p className="text-base tracking-[0.3em] uppercase text-boat-amber font-sans">
                                     復活主日
                                 </p>

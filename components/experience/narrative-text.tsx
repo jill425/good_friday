@@ -96,7 +96,7 @@ export function NarrativeText({
             delay: delay + i * 0.3,
             ease: "easeOut",
           }}
-          className={`leading-relaxed ${className || "text-boat-cream"}`}
+          className={`leading-relaxed text-boat-cream ${className}`}
         >
           {line.trim()}
         </motion.p>
