@@ -54,6 +54,10 @@ export function CrownPhoto() {
       renderer.toneMapping = THREE.ACESFilmicToneMapping
       renderer.toneMappingExposure = 1.4
       renderer.shadowMap.enabled = true
+      // Let CSS fill the fixed container — prevents jump when mobile URL bar
+      // collapses (which changes innerHeight but not the visual crown size).
+      renderer.domElement.style.width = "100%"
+      renderer.domElement.style.height = "100%"
       containerRef.current!.appendChild(renderer.domElement)
 
       // ── Scene & Camera ─────────────────────────────────────────
@@ -121,7 +125,13 @@ export function CrownPhoto() {
       setIsLoaded(true)
 
       // ── Resize ─────────────────────────────────────────────────
+      // Only respond to width changes (orientation / desktop window resize).
+      // Ignores height-only changes caused by the mobile URL bar collapsing,
+      // which previously triggered renderer.setSize and made the crown jump.
+      let stableWidth = window.innerWidth
       const onResize = () => {
+        if (window.innerWidth === stableWidth) return
+        stableWidth = window.innerWidth
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
