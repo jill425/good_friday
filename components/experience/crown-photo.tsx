@@ -105,8 +105,17 @@ export function CrownPhoto() {
       // increases clientHeight mid-scroll, shrinking the denominator and making
       // progress jump, which snaps the crown to a wrong angle.
       let maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight
+      let lastScrollHeight = document.documentElement.scrollHeight
 
       const onScroll = () => {
+        // If page height changed (e.g. images finished loading), re-capture
+        // maxScroll. We only check scrollHeight — not clientHeight — so the
+        // mobile URL-bar collapse (which changes clientHeight only) is ignored.
+        const currentScrollHeight = document.documentElement.scrollHeight
+        if (currentScrollHeight !== lastScrollHeight) {
+          lastScrollHeight = currentScrollHeight
+          maxScroll = currentScrollHeight - document.documentElement.clientHeight
+        }
         const raw = maxScroll > 0 ? window.scrollY / maxScroll : 0
         const progress = Math.min(1, Math.max(0, raw))
         targetRotX = Math.PI * 1.25 * (1 - progress)

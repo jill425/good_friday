@@ -20,7 +20,7 @@ const fadeUp = {
 
 export function CrownOfThorns() {
     return (
-        <div className="relative bg-boat-deep overflow-x-hidden">
+        <div className="relative bg-boat-deep [overflow-x:clip]">
             <CrownPhoto />
             <div className="grain-overlay" />
             <ProgressBar />
