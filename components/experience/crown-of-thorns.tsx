@@ -33,7 +33,7 @@ export function CrownOfThorns() {
                     transition={{ delay: 0.8, duration: 1 }}
                     className="text-xs tracking-[0.25em] uppercase text-boat-pale/50 font-sans"
                 >
-                    受難晚會 2026
+                    基督受難晚會 2026
                 </motion.span>
                 <motion.span
                     initial={{ opacity: 0 }}
@@ -55,7 +55,7 @@ export function CrownOfThorns() {
             >
                 <img
                     src="/images/under_crown_title.png"
-                    alt="冠冕之下 — 受難晚會 2026"
+                    alt="冠冕之下 — 基督受難晚會 2026"
                     className="w-full max-w-lg"
                     style={{ filter: "invert(1) sepia(0.2) brightness(0.5)" }}
                 />
@@ -131,7 +131,7 @@ export function CrownOfThorns() {
                             className="text-center text-boat-cream/90 leading-loose tracking-wide"
                             style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(1.15rem, 3vw, 1.5rem)" }}
                         >
-                            4 / 3（五）、4 / 5（日）<br />
+                            4 / 3（五）、 4 / 5（日）<br />
                             邀請你走進這段時刻<br /><br />
 
                             <span className="text-boat-amber">
@@ -149,10 +149,10 @@ export function CrownOfThorns() {
                             transition={{ duration: 0.8, delay: 0.1 }}
                             className="w-full flex flex-col sm:flex-row gap-4"
                         >
-                            {/* 受難晚會 */}
+                            {/* 基督受難晚會 */}
                             <div className="flex-1 border border-boat-amber/30 rounded px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
                                 <p className="text-base tracking-[0.3em] uppercase text-boat-amber font-sans">
-                                    受難晚會
+                                    基督受難晚會
                                 </p>
                                 <p className="text-3xl font-serif text-boat-cream font-medium">
                                     04.03 <span className="text-base text-boat-pale/70 font-sans font-normal">（五）</span>
@@ -174,7 +174,7 @@ export function CrownOfThorns() {
                                 </p>
                                 <div className="w-8 h-px bg-boat-amber/40" />
                                 <div className="flex flex-col gap-1 text-base text-boat-pale/80 font-sans">
-                                    <span>09:00 & 11:00</span>
+                                    <span>09:00 、 11:00</span>
                                     <span>台北旌旗教會　二樓主堂</span>
                                 </div>
                             </div>

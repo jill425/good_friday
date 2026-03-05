@@ -11,9 +11,9 @@ const _libreBaskerville = Libre_Baskerville({
 })
 
 export const metadata: Metadata = {
-  title: '受難晚會 2026 — 台北旌旗教會',
+  title: '基督受難晚會 2026 — 台北旌旗教會',
   description:
-    '在沉重與榮耀之間，重新看見那份為你而來的愛。受難晚會 4/3（五）、復活主日 4/5（日），台北旌旗教會。',
+    '在沉重與榮耀之間，重新看見那份為你而來的愛。基督受難晚會 4/3（五）、復活主日 4/5（日），台北旌旗教會。',
 
 }
 
