@@ -143,11 +143,11 @@ export function CrownOfThorns() {
                     </div>
 
                     {/* ── 活動資訊卡 ── */}
-                    <div className="min-h-screen flex items-center justify-center px-6 py-8" style={{ scrollSnapAlign: "center" }}>
+                    <div className="min-h-screen flex flex-col items-center justify-center gap-12 px-6 py-8" style={{ scrollSnapAlign: "center" }}>
                         <motion.div
                             {...fadeUp}
                             transition={{ duration: 0.8, delay: 0.1 }}
-                            className="w-full flex flex-col sm:flex-row gap-4"
+                            className="w-full flex flex-col sm:flex-row gap-4 max-w-4xl"
                         >
                             {/* 基督受難晚會 */}
                             <div className="flex-1 border border-boat-amber/30 rounded px-8 py-7 flex flex-col gap-4 bg-boat-deep/60 backdrop-blur-sm">
@@ -178,9 +178,15 @@ export function CrownOfThorns() {
                                     <span>台北旌旗教會　二樓主堂</span>
                                 </div>
                             </div>
-                        </motion.div>
-                    </div>
 
+                        </motion.div>
+                        {/*注意事項*/}
+                        <div>
+                            <NarrativeText mode="line" size="md" >
+                                {"邀請大家不只預備心 也一同預備服飾\n以慎重 整齊的態度參與聚會"}
+                            </NarrativeText>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
