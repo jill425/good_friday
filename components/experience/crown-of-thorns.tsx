@@ -186,9 +186,35 @@ export function CrownOfThorns() {
                                 {"邀請大家不只預備心 也一同預備服飾\n以慎重 整齊的態度參與聚會"}
                             </NarrativeText>
                         </div>
+                        {/* ── 讀經計劃 ── */}
+                        <motion.a
+                            href="https://www.bible.com/zh_TW/reading-plans/69364"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            {...fadeUp}
+                            transition={{ duration: 0.8, delay: 0.1 }}
+                            className="group flex flex-col items-center gap-3"
+                        >
+                            <span className="font-serif text-2xl text-boat-cream leading-snug underline underline-offset-4 decoration-boat-cream/30 group-hover:decoration-boat-cream/80 transition-all duration-300">
+                                冠冕之下 讀經計劃
+                            </span>
+
+                            <div className="flex items-center gap-2">
+
+                                <span className="text-xs text-boat-pale/50 font-sans leading-relaxed group-hover:text-boat-pale/80 transition-colors duration-300">
+                                    邀請你使用 YouVersion 參與讀經計劃
+                                </span>
+                                <img
+                                    src="/images/bible.png"
+                                    alt="YouVersion"
+                                    className="w-5 h-5 shrink-0"
+                                />
+                                {/* <ExternalLink className="w-3 h-3 text-boat-pale/40 group-hover:text-boat-pale/80 transition-colors duration-300" /> */}
+                            </div>
+                        </motion.a>
                     </div>
                 </div>
-            </section>
-        </div>
+            </section >
+        </div >
     )
 }
